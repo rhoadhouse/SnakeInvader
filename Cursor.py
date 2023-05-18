@@ -54,7 +54,6 @@ class Projectile():
 
     def draw_projectile(self):
         """Draws the projectile onto the screen then after it has reached it's maximum allowed travel distance returns the informative text 'delete'"""
-        # pygame.draw.circle(self.screen, "red", [self.position_x, self.position_y], self.size)
         self.screen.blit(self.image, (self.position_x, self.position_y))
         setattr(self, "position_y", self.position_y - self.projectile_speed)
         if self.start_posy - self.position_y > self.fire_distance:

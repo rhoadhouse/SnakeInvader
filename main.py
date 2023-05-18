@@ -3,9 +3,11 @@ import pygame
 from Cursor import Cursor, Projectile
 from Snake import Snake
 
+
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
+
 clock = pygame.time.Clock()
 running = True
 dt = 0
@@ -29,7 +31,7 @@ while running:
             running = False
 
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("White")
+    screen.fill("Black")
 
 
 
@@ -51,21 +53,26 @@ while running:
         # we do not create the object before this because we do not want it to appear on screen until space key has been placed
         # object could have been initialized and hidden in the beginning if we set it's starting position to off the screen, but then we would be stuck with a single projectile object
 
-        proj_list.append(Projectile(screen, [player.get_posx()+player.get_width()//2, player.get_posy()-10]))
+        proj_list.append(Projectile(screen, [player.get_posx()-player.get_width()/2.5, player.get_posy()-10]))
         shot_fired = True
 
 
-    # the player's character has to be drawn onto the screen every frame otherwise it will never appear or move
-    player.draw()
+    # we only want to draw the pojectiles when the "fire" command key has been pressed
+    # when a projectile has reached it's maximum distance it will inform main it is ready for deletion
     if shot_fired == True:
         for item in proj_list:
             if item.draw_projectile() == "delete":
                 proj_list.remove(item)
                 del item
 
+
+    # the player's character has to be drawn onto the screen every frame otherwise it will never appear or move
+    player.draw()
+    
     snake.draw()
 
     # flip() the display to put your work on screen
+
     pygame.display.flip()
 
 
@@ -73,5 +80,6 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+
 
 pygame.quit()
