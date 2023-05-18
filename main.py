@@ -2,8 +2,7 @@
 import pygame
 from Cursor import Cursor, Projectile
 from Snake import Snake
-
-
+FIRE_RATE = 10
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -23,6 +22,7 @@ snake = Snake(screen)
 
 proj_list = []
 shot_fired = False
+frames = 0
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -53,12 +53,15 @@ while running:
         # we do not create the object before this because we do not want it to appear on screen until space key has been placed
         # object could have been initialized and hidden in the beginning if we set it's starting position to off the screen, but then we would be stuck with a single projectile object
 
-        proj_list.append(Projectile(screen, [player.get_posx()-player.get_width()/2.5, player.get_posy()-10]))
-        shot_fired = True
+        # if statement below is to slow down the rate of fire so that it is not a constart steam
+        if frames >= FIRE_RATE:
+            proj_list.append(Projectile(screen, [player.get_posx()-player.get_width()/2.5, player.get_posy()-10]))
+            shot_fired = True
+            frames = 0
 
-
+    frames += 1
     # we only want to draw the pojectiles when the "fire" command key has been pressed
-    # when a projectile has reached it's maximum distance it will inform main it is ready for deletion
+    # when a projectile has reached its maximum distance it will inform main it is ready for deletion
     if shot_fired == True:
         for item in proj_list:
             if item.draw_projectile() == "delete":
@@ -68,7 +71,7 @@ while running:
 
     # the player's character has to be drawn onto the screen every frame otherwise it will never appear or move
     player.draw()
-    
+
     snake.draw()
 
     # flip() the display to put your work on screen
