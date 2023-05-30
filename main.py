@@ -18,8 +18,17 @@ player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 player = Cursor(screen, 300, 300)
 # proj = Projectile(screen, player.shoot())
 
-snake = Snake(screen)
+snake = Snake(screen, (200,200))
 
+
+#########################################################################################################
+# Main loop starts here
+#
+#
+#
+#
+#
+#####################################################################################################
 proj_list = []
 shot_fired = False
 frames = 0
@@ -31,7 +40,7 @@ while running:
             running = False
 
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("Black")
+    screen.fill("White")
 
 
 
@@ -59,6 +68,18 @@ while running:
             shot_fired = True
             frames = 0
 
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w] and (player_pos[1]>0):
+        snake.move_up()
+    if keys[pygame.K_s] and (player_pos[1]<screen.get_height()):
+        snake.move_down()
+    if keys[pygame.K_a] and (player_pos[0]>0):
+        snake.move_left()
+    if keys[pygame.K_d] and (player_pos[0]<screen.get_width()):
+        snake.move_right()
+
+
     frames += 1
     # we only want to draw the pojectiles when the "fire" command key has been pressed
     # when a projectile has reached its maximum distance it will inform main it is ready for deletion
@@ -82,7 +103,7 @@ while running:
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(30)
 
 
 pygame.quit()

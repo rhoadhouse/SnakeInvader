@@ -1,91 +1,76 @@
 import pygame
-import random
+from pygame.math import Vector2
 
 # Initialize Pygame
 pygame.init()
 
-# Define some constants for the game window
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
-BG_COLOR = (0, 0, 0)
+# Define the colors
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+WHITE = (255, 255, 255)
 
-# Create the game window
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Space Invaders")
+# Set the width and height of the screen
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Snake Game")
 
-# Create the player
-player_img = pygame.image.load("player.png")
-player_x = WINDOW_WIDTH // 2 - player_img.get_width() // 2
-player_y = WINDOW_HEIGHT - player_img.get_height()
-player_speed = 5
+# Define the size and initial position of the snake's head
+snake_size = 20
+head_position = Vector2(screen_width // 2, screen_height // 2)
 
-# Create the enemies
-enemy_img = pygame.image.load("enemy.png")
-enemies = []
-for i in range(10):
-    enemy_x = random.randint(0, WINDOW_WIDTH - enemy_img.get_width())
-    enemy_y = random.randint(50, 200)
-    enemies.append((enemy_x, enemy_y))
+# Define the initial direction of the snake
+direction = Vector2(1, 0)  # Initial direction: right
 
-# Create the bullets
-bullet_img = pygame.image.load("bullet.png")
-bullets = []
+clock = pygame.time.Clock()
 
-# Create the main game loop
-running = True
-while running:
-    # Handle events
+# Initialize the snake's body as an array of segments
+snake_body = [
+    head_position,
+    head_position - (direction * snake_size),
+    head_position - (direction * 2 * snake_size)
+]
+
+game_over = False
+
+# Main game loop
+while not game_over:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                bullet_x = player_x + player_img.get_width() // 2 - bullet_img.get_width() // 2
-                bullet_y = player_y
-                bullets.append((bullet_x, bullet_y))
+            game_over = True
 
-    # Move the player
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and player_x > 0:
-        player_x -= player_speed
-    elif keys[pygame.K_RIGHT] and player_x < WINDOW_WIDTH - player_img.get_width():
-        player_x += player_speed
+        # Check for arrow key presses to change the direction of the snake
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT and direction.x != 1:  # Avoid reversing direction
+                direction = Vector2(-1, 0)
+            elif event.key == pygame.K_RIGHT and direction.x != -1:
+                direction = Vector2(1, 0)
+            elif event.key == pygame.K_UP and direction.y != 1:
+                direction = Vector2(0, -1)
+            elif event.key == pygame.K_DOWN and direction.y != -1:
+                direction = Vector2(0, 1)
 
-    # Move the bullets
-    for bullet in bullets:
-        bullet_x, bullet_y = bullet
-        bullet_y -= 10
-        bullet = (bullet_x, bullet_y)
-        if bullet_y < 0:
-            bullets.remove(bullet)
-        else:
-            bullet_rect = bullet_img.get_rect().move(bullet_x, bullet_y)
-            for enemy in enemies:
-                enemy_rect = enemy_img.get_rect().move(enemy)
-                if bullet_rect.colliderect(enemy_rect):
-                    enemies.remove(enemy)
-                    bullets.remove(bullet)
-                    break
+    # Update the position of the snake's head based on the current direction
+    head_position += direction * snake_size
 
-    # Move the enemies
-    for i, enemy in enumerate(enemies):
-        enemy_x, enemy_y = enemy
-        enemy_x += random.randint(-5, 5)
-        if enemy_x < 0:
-            enemy_x = 0
-        elif enemy_x > WINDOW_WIDTH - enemy_img.get_width():
-            enemy_x = WINDOW_WIDTH - enemy_img.get_width()
-        enemy_y += 5
-        enemies[i] = (enemy_x, enemy_y)
+    # Create a new segment for the head and add it to the beginning of the snake's body
+    snake_body.insert(0, head_position)
 
-    # Draw the screen
-    screen.fill(BG_COLOR)
-    screen.blit(player_img, (player_x, player_y))
-    for enemy in enemies:
-        screen.blit(enemy_img, enemy)
-    for bullet in bullets:
-        screen.blit(bullet_img, bullet)
-    pygame.display.flip()
+    # Remove the last segment of the snake's body
+    snake_body.pop()
 
-# Clean up
+    # Fill the screen with black color
+    screen.fill(BLACK)
+
+    # Draw the snake
+    for segment in snake_body:
+        pygame.draw.rect(screen, GREEN, (segment.x, segment.y, snake_size, snake_size))
+
+    # Update the display
+    pygame.display.update()
+
+    # Set the frame rate of the game
+    clock.tick(10)
+
+# Quit the game
 pygame.quit()
