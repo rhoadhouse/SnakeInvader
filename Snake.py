@@ -48,10 +48,18 @@ class Snake():
         self.set_body_pos((0,1))
 
     def add_body_segment(self):
-        pass
+        list = self.body_seg_positions
+        list.append(list[-1])
+        setattr(self,"body_seg_positions", list)
+        setattr(self, "length", self.length+1)
 
     def delete_body_segment(self):
-        pass
+        list = self.body_seg_positions
+        print(self.length)
+        if self.length > 2:
+            list.pop(-1)
+            setattr(self, "body_seg_positions", list)
+            setattr(self, "length", self.length - 1)
 
 
     def set_body_pos(self, direction):

@@ -72,12 +72,15 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w] and (player_pos[1]>0):
         snake.move_up()
+
     if keys[pygame.K_s] and (player_pos[1]<screen.get_height()):
         snake.move_down()
+        snake.add_body_segment()
     if keys[pygame.K_a] and (player_pos[0]>0):
         snake.move_left()
     if keys[pygame.K_d] and (player_pos[0]<screen.get_width()):
         snake.move_right()
+        snake.delete_body_segment()
 
 
     frames += 1
